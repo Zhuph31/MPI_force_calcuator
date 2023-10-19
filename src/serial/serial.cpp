@@ -1,7 +1,12 @@
 #include "serial.h"
 
-void calculate_closest(std::vector<Particle> &particles) {
-  for (int i = 0; i < particles.size(); ++i) {
+void calculate_closest(std::vector<Particle> &particles, int begin, int end) {
+  if (begin < 0 || end < 0) {
+    begin = 0;
+    end = particles.size() - 1;
+  }
+
+  for (size_t i = begin; i <= size_t(end); ++i) {
     Particle &cur = particles[i];
     int closest = -1;
     if (i - 1 < 0) {
@@ -27,10 +32,17 @@ void calculate_closest(std::vector<Particle> &particles) {
   }
 }
 
-std::vector<double> calculate_force(const std::vector<Particle> &particles) {
+std::vector<double> calculate_force(const std::vector<Particle> &particles,
+                                    int begin, int end) {
+  if (begin < 0 || end < 0) {
+    begin = 0;
+    end = particles.size() - 1;
+  }
+
   std::vector<double> forces;
   forces.reserve(particles.size());
-  for (const Particle &p : particles) {
+  for (size_t i = begin; i <= size_t(end); ++i) {
+    const Particle &p = particles[i];
     double dist = std::sqrt(std::pow((p.x - p.closest->x) * unit_size, 2) +
                             std::pow((p.y - p.closest->y) * unit_size, 2));
 
