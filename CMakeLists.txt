@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(CSVReader)
+project(force_calculator)
+
+# find dpes
+find_package(gflags REQUIRED)
+include_directories(${gflags_INCLUDE_DIR})
+
 
 # 添加可执行文件
-add_executable(csv_reader csv_reader.cpp)
+add_executable(force_calculator main.cpp src/utils/utils.cpp src/csv/csv_reader.cpp)
 
 # 生成 compile_commands.json 文件
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -18,5 +23,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 链接标准库
-target_link_libraries(csv_reader)
+target_link_libraries(force_calculator gflags)
 
