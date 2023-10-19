@@ -8,7 +8,9 @@ include_directories(${gflags_INCLUDE_DIR})
 
 
 # 添加可执行文件
-add_executable(force_calculator main.cpp src/utils/utils.cpp src/csv/csv_reader.cpp)
+file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
+add_executable(force_calculator main.cpp ${SOURCES})
+
 
 # 生成 compile_commands.json 文件
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

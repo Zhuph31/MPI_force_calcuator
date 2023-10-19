@@ -6,7 +6,7 @@
 
 #include "csv_reader.h"
 
-std::vector<Particle> read_csv(int num) {
+std::vector<Particle> read_csv(size_t num) {
   std::vector<Particle> particles;
 
   // read particles information from csv

@@ -3,4 +3,4 @@
 
 #include "../particle.h"
 
-std::vector<Particle> read_csv(int num);
+std::vector<Particle> read_csv(size_t num);

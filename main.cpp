@@ -1,8 +1,10 @@
 #include <gflags/gflags.h>
+#include <stdexcept>
 
-#include "src/calculate.h"
 #include "src/csv/csv_reader.h"
+#include "src/serial/serial.h"
 
+DEFINE_int32(mode, 0, "mode number");
 DEFINE_int32(particle_num, 100, "number of particles to calculate");
 
 int main(int argc, char *argv[]) {
@@ -11,10 +13,21 @@ int main(int argc, char *argv[]) {
 
   auto particles = read_csv(FLAGS_particle_num);
   calculate_closest(particles);
-  auto forces = calculate_force(particles);
 
-  for (int i = 0; i < forces.size(); ++i) {
-    printf("index:%d, particle:%s, force:%e\n", i,
+  std::vector<double> forces;
+
+  switch (FLAGS_mode) {
+  case 0:
+    forces = calculate_force(particles);
+    break;
+  case 1:
+    break;
+  default:
+    throw std::runtime_error("this mode is not implemented");
+  }
+
+  for (size_t i = 0; i < forces.size(); ++i) {
+    printf("index:%lu, particle:%s, force:%e\n", i,
            particles[i].to_string().c_str(), forces[i]);
   }
 
