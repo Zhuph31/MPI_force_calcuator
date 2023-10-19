@@ -17,7 +17,6 @@ std::vector<Particle> read_csv(int num) {
   }
 
   std::string line;
-
   while (std::getline(file, line) && particles.size() < num) {
     std::istringstream ss(line);
     std::vector<std::string> row;
@@ -31,6 +30,12 @@ std::vector<Particle> read_csv(int num) {
     Particle p(std::stoi(row[0]), std::stoi(row[1]), row[2]);
 
     particles.push_back(std::move(p));
+  }
+
+  // reuse if we need more
+  int pos = 0;
+  while (particles.size() < num) {
+    particles.push_back(particles[pos++]);
   }
 
   file.close();
