@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "src/csv/csv_reader.h"
+#include "src/even_threads/even_dispatcher.h"
 #include "src/serial/serial.h"
 
 DEFINE_int32(mode, 0, "mode number");
@@ -15,14 +16,18 @@ int main(int argc, char *argv[]) {
   auto particles = read_csv(FLAGS_particle_num);
 
   std::vector<double> forces;
+  forces.resize(particles.size());
 
   switch (FLAGS_mode) {
   case 0:
     calculate_closest(particles);
-    forces = calculate_force(particles);
+    calculate_force(particles, forces);
     break;
-  case 1:
+  case 1: {
+    EvenDispatcher dispatcher(FLAGS_thread_num);
+    dispatcher.run(particles, forces);
     break;
+  }
   default:
     throw std::runtime_error("this mode is not implemented");
   }

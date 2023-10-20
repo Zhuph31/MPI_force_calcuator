@@ -11,6 +11,8 @@ include_directories(${gflags_INCLUDE_DIR})
 file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
 add_executable(force_calculator main.cpp ${SOURCES})
 
+add_compile_options(-Wno-sign-compare)
+
 
 # 生成 compile_commands.json 文件
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

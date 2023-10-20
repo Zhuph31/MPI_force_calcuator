@@ -13,5 +13,6 @@ const double unit_size = 1e-10;
 void calculate_closest(std::vector<Particle> &particles, int begin = -1,
                        int end = -1);
 
-std::vector<double> calculate_force(const std::vector<Particle> &particles,
-                                    int begin = -1, int end = -1);
+void calculate_force(const std::vector<Particle> &particles,
+                     std::vector<double> &results, int begin = -1,
+                     int end = -1);

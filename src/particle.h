@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include "utils/utils.h"
 
 struct Particle {
@@ -21,3 +23,5 @@ struct Particle {
                          closest_str.c_str());
   }
 };
+
+void debug_particles(const std::vector<Particle> &particles);
