@@ -32,7 +32,6 @@ public:
     }
   }
 
-private:
   void calculate(int index, std::vector<Particle> &particles,
                  std::vector<double> &forces, int begin, int end) {
     printf("thread %d starts, begin:%d, end:%d\n", index, begin, end);
@@ -41,6 +40,7 @@ private:
     printf("thread %d finishes\n", index);
   }
 
+private:
   int thread_num_ = 1;
   std::vector<std::thread> workers_;
 };

@@ -1,9 +1,11 @@
 #include <chrono>
 #include <gflags/gflags.h>
+#include <mpi.h>
 #include <stdexcept>
 
 #include "src/csv/csv_reader.h"
 #include "src/even_threads/even_dispatcher.h"
+#include "src/mpi/mpi_dispatcher.h"
 #include "src/serial/serial.h"
 
 DEFINE_int32(mode, 0, "mode number");
@@ -31,6 +33,17 @@ int main(int argc, char *argv[]) {
     dispatcher.run(particles, forces);
     break;
   }
+  case 2: {
+    // MPI_Init(&argc, &argv);
+    MPIDispatcher dispatcher(1);
+    dispatcher.run(particles);
+    // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    // MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    // printf("rank:%d, size:%d\n", rank, size);
+    break;
+  }
+
   default:
     throw std::runtime_error("this mode is not implemented");
   }
