@@ -34,13 +34,31 @@ int main(int argc, char *argv[]) {
     break;
   }
   case 2: {
-    // MPI_Init(&argc, &argv);
+    MPI_Init(&argc, &argv);
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (rank == 0) {
+      MPIDispatcher dispatcher(size - 1);
+      // dispatcher.run();
+
+      std::vector<int> a{1, 2, 3, 4, 5};
+      std::vector<int> b{a.begin() + 1, a.begin() + 4};
+      b[1] = 100;
+      for (int i = 0; i < 5; ++i) {
+        printf("a:%d\n", a[i]);
+      }
+      for (int i = 0; i < 3; ++i) {
+        printf("b:%d\n", b[i]);
+      }
+    } else {
+    }
+
     MPIDispatcher dispatcher(1);
     dispatcher.run(particles);
-    // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    // MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    // printf("rank:%d, size:%d\n", rank, size);
+    printf("rank:%d, size:%d\n", rank, size);
+    MPI_Finalize();
     break;
   }
 
@@ -52,11 +70,11 @@ int main(int argc, char *argv[]) {
 
   auto duration =
       std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-  printf(" Time taken by function: %ld microseconds", duration.count());
+  printf(" Time taken by function: %ld microseconds\n", duration.count());
 
-  for (size_t i = 0; i < forces.size(); ++i) {
-    // printf("index:%lu, particle:%s, force:%e\n", i,
-    //        particles[i].to_string().c_str(), forces[i]);
+  for (size_t i = 0; i < forces.size() && i < 10; ++i) {
+    printf("index:%lu, particle:%s, force:%e\n", i,
+           particles[i].to_string().c_str(), forces[i]);
   }
 
   return 0;
