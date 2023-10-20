@@ -4,8 +4,11 @@ project(force_calculator)
 
 # find dpes
 find_package(gflags REQUIRED)
-include_directories(${gflags_INCLUDE_DIR})
+find_package(OpenMP REQUIRED)
+add_definitions(-DOMPI_SKIP_MPICXX)
 
+include_directories(${gflags_INCLUDE_DIR})
+include_directories(SYSTEM "/usr/lib/x86_64-linux-gnu/openmpi/include")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
@@ -30,5 +33,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 链接标准库
-target_link_libraries(force_calculator gflags)
+target_link_libraries(force_calculator gflags OpenMP::OpenMP_CXX)
 
