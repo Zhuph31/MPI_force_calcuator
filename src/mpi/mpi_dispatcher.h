@@ -12,12 +12,15 @@ public:
   MPIDispatcher(int worker_num) : worker_num_(worker_num) {}
 
   std::vector<double> run(const std::vector<Particle> &particles) {
-    for (int i = 1; i <= worker_num_; i++) {
+    for (int i = 1; i < worker_num_; i++) {
+      printf("MPI dispatcher, dispatching for worker %d\n", i);
       int particle_num = particles.size();
       MPI_Send(&particle_num, 1, MPI_INT, worker_num_, MPI_Tag::INT,
                MPI_COMM_WORLD);
+      printf("vec size dispatched to worker %d\n", i);
       MPI_Send(particles.data(), particle_num * sizeof(Particle), MPI_BYTE, 1,
                MPI_Tag::VECTOR, MPI_COMM_WORLD);
+      printf("vec dispatched to worker %d\n", i);
     }
 
     std::vector<double> forces;

@@ -39,12 +39,13 @@ int main(int argc, char *argv[]) {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+    // printf("size:%d, rank:%d\n", size, rank);
 
     if (rank == 0) {
       MPIDispatcher dispatcher(size - 1);
       dispatcher.run(particles);
     } else {
-      MPIWorker worker(FLAGS_thread_num);
+      MPIWorker worker(rank, FLAGS_thread_num);
       worker.run();
     }
 
