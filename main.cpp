@@ -1,3 +1,4 @@
+#include <chrono>
 #include <gflags/gflags.h>
 #include <stdexcept>
 
@@ -18,6 +19,8 @@ int main(int argc, char *argv[]) {
   std::vector<double> forces;
   forces.resize(particles.size());
 
+  auto start = std::chrono::high_resolution_clock::now();
+
   switch (FLAGS_mode) {
   case 0:
     calculate_closest(particles);
@@ -32,9 +35,15 @@ int main(int argc, char *argv[]) {
     throw std::runtime_error("this mode is not implemented");
   }
 
+  auto end = std::chrono::high_resolution_clock::now();
+
+  auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+  printf(" Time taken by function: %ld microseconds", duration.count());
+
   for (size_t i = 0; i < forces.size(); ++i) {
-    printf("index:%lu, particle:%s, force:%e\n", i,
-           particles[i].to_string().c_str(), forces[i]);
+    // printf("index:%lu, particle:%s, force:%e\n", i,
+    //        particles[i].to_string().c_str(), forces[i]);
   }
 
   return 0;

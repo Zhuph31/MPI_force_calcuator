@@ -6,7 +6,7 @@ void calculate_closest(std::vector<Particle> &particles, int begin, int end) {
     end = particles.size() - 1;
   }
 
-  for (size_t i = begin; i <= size_t(end); ++i) {
+  for (int i = begin; i <= end; ++i) {
     Particle &cur = particles[i];
     int closest = -1;
     if (i - 1 < 0) {
