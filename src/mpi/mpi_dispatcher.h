@@ -5,34 +5,26 @@
 
 #include "../even_threads/even_dispatcher.h"
 #include "../particle.h"
+#include "tag.h"
 
 class MPIDispatcher {
 public:
-  MPIDispatcher(int process_num) : process_num_(process_num) {}
+  MPIDispatcher(int worker_num) : worker_num_(worker_num) {}
 
-  void run(std::vector<Particle> &particles) {
+  std::vector<double> run(const std::vector<Particle> &particles) {
+    for (int i = 1; i <= worker_num_; i++) {
+      int particle_num = particles.size();
+      MPI_Send(&particle_num, 1, MPI_INT, worker_num_, MPI_Tag::INT,
+               MPI_COMM_WORLD);
+      MPI_Send(particles.data(), particle_num * sizeof(Particle), MPI_BYTE, 1,
+               MPI_Tag::VECTOR, MPI_COMM_WORLD);
+    }
 
-    // int rank, size;
-    // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    // MPI_Comm_size(MPI_COMM_WORLD, &size);
+    std::vector<double> forces;
 
-    // if (rank == 0) {
-    //   for (int i = 1; i < size; i++) {
-    //     // 发送任务到其他进程
-    //     MPI_Send(&i, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-    //   }
-    // } else {
-    //   // 从其他进程接收任务
-    //   int task;
-    //   MPI_Recv(&task, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-    //   // 执行任务
-    // }
+    return forces;
   }
 
-  void calculate() {}
-
 private:
-  int process_num_;
-  std::unique_ptr<EvenDispatcher> dispatcher_;
+  int worker_num_;
 };

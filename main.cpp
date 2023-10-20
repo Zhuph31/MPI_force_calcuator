@@ -6,6 +6,7 @@
 #include "src/csv/csv_reader.h"
 #include "src/even_threads/even_dispatcher.h"
 #include "src/mpi/mpi_dispatcher.h"
+#include "src/mpi/mpi_worker.h"
 #include "src/serial/serial.h"
 
 DEFINE_int32(mode, 0, "mode number");
@@ -41,23 +42,12 @@ int main(int argc, char *argv[]) {
 
     if (rank == 0) {
       MPIDispatcher dispatcher(size - 1);
-      // dispatcher.run();
-
-      std::vector<int> a{1, 2, 3, 4, 5};
-      std::vector<int> b{a.begin() + 1, a.begin() + 4};
-      b[1] = 100;
-      for (int i = 0; i < 5; ++i) {
-        printf("a:%d\n", a[i]);
-      }
-      for (int i = 0; i < 3; ++i) {
-        printf("b:%d\n", b[i]);
-      }
+      dispatcher.run(particles);
     } else {
+      MPIWorker worker(FLAGS_thread_num);
+      worker.run();
     }
 
-    MPIDispatcher dispatcher(1);
-    dispatcher.run(particles);
-    printf("rank:%d, size:%d\n", rank, size);
     MPI_Finalize();
     break;
   }
