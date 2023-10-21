@@ -2,6 +2,7 @@
 #include <gflags/gflags.h>
 #include <mpi.h>
 #include <stdexcept>
+#include <unistd.h>
 
 #include "src/csv/csv_reader.h"
 #include "src/even_threads/even_dispatcher.h"
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     // printf("size:%d, rank:%d\n", size, rank);
+    printf("process %d rank %d\n", getpid(), rank);
 
     if (rank == 0) {
       MPIDispatcher dispatcher(size - 1);

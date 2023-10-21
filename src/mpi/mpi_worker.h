@@ -20,12 +20,22 @@ public:
     std::vector<Particle> particles;
     particles.resize(vector_size);
 
-    MPI_Recv(particles.data(), vector_size * sizeof(Particle), MPI_BYTE, 0,
-             MPI_Tag::VECTOR, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    printf("worker %d vec received\n", mpi_rank_);
+    for (int i = 0; i < vector_size; ++i) {
+      MPI_Recv(&(particles[i].x), 1, MPI_INT, 0, MPI_Tag::INT, MPI_COMM_WORLD,
+               MPI_STATUS_IGNORE);
+      MPI_Recv(&(particles[i].y), 1, MPI_INT, 0, MPI_Tag::INT, MPI_COMM_WORLD,
+               MPI_STATUS_IGNORE);
 
+      char message_buffer[2];
+      MPI_Recv(&message_buffer, 2, MPI_CHAR, 0, MPI_Tag::CHAR, MPI_COMM_WORLD,
+               MPI_STATUS_IGNORE);
+      particles[i].type = message_buffer;
+      printf("worker %d vec received, size:%lu\n", mpi_rank_, particles.size());
+    }
+
+    printf("try to debug\n");
     for (const auto &each : particles) {
-      printf("debug:%s\n", each.to_string().c_str());
+      printf("debug:%d,%d,%s\n", each.x, each.y, each.type.c_str());
     }
 
     // std::vector<double> forces;

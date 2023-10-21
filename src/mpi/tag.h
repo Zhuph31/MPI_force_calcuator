@@ -2,5 +2,5 @@
 
 enum MPI_Tag {
   INT = 0,
-  VECTOR = 1,
+  CHAR = 1,
 };
