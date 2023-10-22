@@ -44,6 +44,8 @@ public:
     printf("thread %d starts, begin:%d, end:%d\n", index, begin, end);
     calculate_closest(particles, begin, end);
     calculate_force(particles, forces, begin, end);
+    debug_particles(particles);
+    printf("%s\n", string_printf_vector(forces).c_str());
     printf("thread %d finishes\n", index);
   }
 
