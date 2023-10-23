@@ -10,7 +10,7 @@
 #include "src/mpi/mpi_worker.h"
 #include "src/serial/serial.h"
 
-DEFINE_int32(mode, 0, "mode number");
+DEFINE_int32(mode, 1, "mode number");
 DEFINE_int32(particle_num, 100, "number of particles to calculate");
 DEFINE_int32(thread_num, 10, "number of threads in mode 1");
 
@@ -27,16 +27,16 @@ int main(int argc, char *argv[]) {
   int rank = -1, size = -1;
 
   switch (FLAGS_mode) {
-  case 0:
+  case 1:
     calculate_closest(particles);
     calculate_force(particles, forces);
     break;
-  case 1: {
+  case 2: {
     EvenDispatcher dispatcher(FLAGS_thread_num);
     dispatcher.run(particles, forces);
     break;
   }
-  case 2: {
+  case 3: {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
