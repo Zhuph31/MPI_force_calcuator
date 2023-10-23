@@ -19,19 +19,31 @@ public:
       end = particles.size() - 1;
     }
     int total_size = end - begin + 1;
-    printf("runnig even dispatcher, thread num:%d, size:%d\n", thread_num_,
-           total_size);
     int part_size = total_size / thread_num_;
+    if (part_size <= 0) {
+      part_size = 1;
+    }
+
+    int left = total_size - (part_size * thread_num_);
+
+    printf("running even dispatcher, thread num:%d, size:%d, part_size:%d\n",
+           thread_num_, total_size, part_size);
 
     for (size_t i = 0; i < thread_num_; ++i) {
-      int end = begin + part_size - 1;
+      int inner_part_size = part_size;
+      if (left > 0) {
+        --left;
+        ++inner_part_size;
+      }
+
+      int end = begin + inner_part_size - 1;
       if (end >= particles.size()) {
         end = particles.size() - 1;
       }
       workers_.emplace_back(std::thread(
           std::bind(&EvenDispatcher::calculate, this, i, std::ref(particles),
                     std::ref(forces), begin, end)));
-      begin += part_size;
+      begin += inner_part_size;
     }
 
     for (size_t i = 0; i < thread_num_; ++i) {
