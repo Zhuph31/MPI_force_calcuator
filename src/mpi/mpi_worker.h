@@ -1,9 +1,12 @@
 #pragma once
+#include <gflags/gflags.h>
 #include <mpi.h>
 
-#include "../even_threads/even_dispatcher.h"
 #include "../particle.h"
+#include "../queue/queue_dispatcher.h"
 #include "tag.h"
+
+DEFINE_int32(chunk_size, 10, "chunk size, obviously");
 
 class MPIWorker {
 public:
@@ -44,7 +47,7 @@ public:
     std::vector<double> forces;
     forces.resize(vector_size);
 
-    EvenDispatcher dispatcher(thread_num_);
+    QueueDispatcher dispatcher(thread_num_, FLAGS_chunk_size);
     int calculate_end = vector_size - 1 - extra_end;
     dispatcher.run(particles, forces, extra_begin, calculate_end);
 

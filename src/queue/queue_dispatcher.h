@@ -11,17 +11,17 @@ public:
   QueueDispatcher(int thread_num, int chunk_size)
       : EvenDispatcher(thread_num), chunk_size_(chunk_size) {}
 
-  // unfortunately begin and end are not used currently in this function
   void run(std::vector<Particle> &particles, std::vector<double> &forces,
            int begin = -1, int end = -1) override {
     int particle_size = particles.size();
     int pos = 0;
-    int extra_begin = 0, extra_end = 1;
+    int extra_begin = (begin == 0 ? 0 : 1), extra_end = 1;
     while (1) {
       std::vector<Particle> chunk;
       chunk.reserve(chunk_size_);
       int count = 0, begin_index = pos;
-      while (count < chunk_size_ && pos < particle_size) {
+      while (count < chunk_size_ + extra_begin + extra_end &&
+             pos < (particle_size - end)) {
         chunk.emplace_back(particles[pos]);
         ++count;
         ++pos;
@@ -43,6 +43,15 @@ public:
       // extra begin
       --pos;
       extra_begin = 1;
+    }
+
+    for (int i = 0; i < thread_num_; ++i) {
+      workers_.emplace_back(std::thread(std::bind(
+          &QueueDispatcher::fetch_and_calculate, this, i, std::ref(forces))));
+    }
+
+    for (size_t i = 0; i < thread_num_; ++i) {
+      workers_[i].join();
     }
   }
 
