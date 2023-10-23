@@ -43,6 +43,7 @@ public:
 
     std::vector<double> forces;
     forces.resize(vector_size);
+
     EvenDispatcher dispatcher(thread_num_);
     int calculate_end = vector_size - 1 - extra_end;
     dispatcher.run(particles, forces, extra_begin, calculate_end);

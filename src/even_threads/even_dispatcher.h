@@ -12,8 +12,8 @@ class EvenDispatcher {
 public:
   EvenDispatcher(int thread_num) : thread_num_(thread_num) {}
 
-  void run(std::vector<Particle> &particles, std::vector<double> &forces,
-           int begin = -1, int end = -1) {
+  virtual void run(std::vector<Particle> &particles,
+                   std::vector<double> &forces, int begin = -1, int end = -1) {
     if (begin < 0 || end < 0) {
       begin = 0;
       end = particles.size() - 1;
@@ -51,6 +51,7 @@ public:
     }
   }
 
+protected:
   void calculate(int index, std::vector<Particle> &particles,
                  std::vector<double> &forces, int begin, int end) {
     printf("thread %d starts, begin:%d, end:%d\n", index, begin, end);
@@ -61,7 +62,6 @@ public:
     printf("thread %d finishes\n", index);
   }
 
-private:
   int thread_num_ = 1;
   std::vector<std::thread> workers_;
 };
