@@ -8,29 +8,36 @@
 
 class QueueDispatcher : public EvenDispatcher {
 public:
-  QueueDispatcher(int thread_num, int chunk_size)
-      : EvenDispatcher(thread_num), chunk_size_(chunk_size) {}
+  QueueDispatcher(int id, int thread_num, int chunk_size)
+      : EvenDispatcher(thread_num), id_(id), chunk_size_(chunk_size) {}
 
   void run(std::vector<Particle> &particles, std::vector<double> &forces,
            int begin = -1, int end = -1) override {
     int particle_size = particles.size();
     int pos = 0;
     int extra_begin = (begin == 0 ? 0 : 1), extra_end = 1;
-    while (1) {
+
+    printf("queue disptacher %d start running\n", id_);
+    bool should_break = false;
+    while (!should_break) {
       std::vector<Particle> chunk;
-      chunk.reserve(chunk_size_);
+      chunk.reserve(chunk_size_ + 2);
       int count = 0, begin_index = pos;
-      while (count < chunk_size_ + extra_begin + extra_end &&
-             pos < (particle_size - end)) {
+      int expect_size = chunk_size_ + extra_begin + extra_end;
+      while (count < expect_size && pos <= end) {
         chunk.emplace_back(particles[pos]);
         ++count;
         ++pos;
+        if (count < expect_size && pos > end) {
+          extra_end = 0;
+        }
       }
-      if (pos < particle_size) {
-        // extra end
+
+      if (count < expect_size && pos < particle_size) {
+        // extra end, the final one that does not need to be computed
         chunk.emplace_back(particles[pos]);
-      } else {
-        extra_end = 0;
+        extra_end = 1;
+        should_break = true;
       }
 
       q_.push(
@@ -45,6 +52,8 @@ public:
       extra_begin = 1;
     }
 
+    printf("queue dispatcher %d finsihed chunking\n", id_);
+
     for (int i = 0; i < thread_num_; ++i) {
       workers_.emplace_back(std::thread(std::bind(
           &QueueDispatcher::fetch_and_calculate, this, i, std::ref(forces))));
@@ -53,6 +62,8 @@ public:
     for (size_t i = 0; i < thread_num_; ++i) {
       workers_[i].join();
     }
+
+    printf("queue dispatcher %d finished\n", id_);
   }
 
 private:
@@ -99,6 +110,7 @@ private:
       forces[j] = partial_forces[i];
     }
   }
+  int id_;
   int chunk_size_;
   std::mutex m_;
   std::queue<ParticleChunk> q_;

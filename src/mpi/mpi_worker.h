@@ -47,7 +47,7 @@ public:
     std::vector<double> forces;
     forces.resize(vector_size);
 
-    QueueDispatcher dispatcher(thread_num_, FLAGS_chunk_size);
+    QueueDispatcher dispatcher(mpi_rank_, thread_num_, FLAGS_chunk_size);
     int calculate_end = vector_size - 1 - extra_end;
     dispatcher.run(particles, forces, extra_begin, calculate_end);
 
