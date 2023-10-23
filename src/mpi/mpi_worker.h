@@ -60,7 +60,7 @@ public:
     int send_back_begin = (!!extra_begin) ? 1 : 0;
 
     int send_back_data_size = vector_size - extra_begin - extra_end;
-    printf("MPI worker %d send back data, size:%d, begin:%d", mpi_rank_,
+    printf("MPI worker %d send back data, size:%d, begin:%d\n", mpi_rank_,
            send_back_data_size, send_back_begin);
     MPI_Send(&(forces[send_back_begin]), send_back_data_size, MPI_DOUBLE, 0,
              MPI_Tag::DOUBLE, MPI_COMM_WORLD);
