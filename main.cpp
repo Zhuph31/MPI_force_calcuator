@@ -16,7 +16,7 @@ DEFINE_int32(thread_num, 10, "number of threads in mode 1");
 
 int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-  // printf("particle num:%d\n", FLAGS_particle_num);
+  // debug_printf("particle num:%d\n", FLAGS_particle_num);
 
   auto particles = read_csv(FLAGS_particle_num);
 
@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    // printf("size:%d, rank:%d\n", size, rank);
-    printf("process %d rank %d\n", getpid(), rank);
+    // debug_printf("size:%d, rank:%d\n", size, rank);
+    debug_printf("process %d rank %d\n", getpid(), rank);
 
     if (rank == 0) {
       MPIDispatcher dispatcher(size - 1);
@@ -63,11 +63,12 @@ int main(int argc, char *argv[]) {
     auto end = std::chrono::high_resolution_clock::now();
     auto duration =
         std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    printf(" Time taken by function: %ld microseconds\n", duration.count());
+    debug_printf(" Time taken by function: %ld microseconds\n",
+                 duration.count());
 
     for (size_t i = 0; i < forces.size() && i < 10; ++i) {
-      printf("index:%lu, particle:%s, force:%e\n", i,
-             particles[i].to_string().c_str(), forces[i]);
+      debug_printf("index:%lu, particle:%s, force:%e\n", i,
+                   particles[i].to_string().c_str(), forces[i]);
     }
   }
 

@@ -14,11 +14,11 @@ public:
       : mpi_rank_(mpi_rank), thread_num_(thread_num) {}
 
   void run() {
-    printf("MPI worker %d started\n", mpi_rank_);
+    debug_printf("MPI worker %d started\n", mpi_rank_);
     int vector_size = 0;
     MPI_Recv(&vector_size, 1, MPI_INT, 0, MPI_Tag::INT, MPI_COMM_WORLD,
              MPI_STATUS_IGNORE);
-    printf("worker %d vec size received, %d\n", mpi_rank_, vector_size);
+    debug_printf("worker %d vec size received, %d\n", mpi_rank_, vector_size);
 
     std::vector<Particle> particles;
     particles.resize(vector_size);
@@ -41,8 +41,9 @@ public:
 
       particles[i].type = message_buffer;
     }
-    printf("worker %d vec received, size:%lu, extra_begin:%d, extra_end:%d\n",
-           mpi_rank_, particles.size(), extra_begin, extra_end);
+    debug_printf(
+        "worker %d vec received, size:%lu, extra_begin:%d, extra_end:%d\n",
+        mpi_rank_, particles.size(), extra_begin, extra_end);
 
     std::vector<double> forces;
     forces.resize(vector_size);
@@ -51,21 +52,21 @@ public:
     int calculate_end = vector_size - 1 - extra_end;
     dispatcher.run(particles, forces, extra_begin, calculate_end);
 
-    printf("worker %d calculated, size:%d, begin:%d, end:%d\n", mpi_rank_,
-           vector_size, extra_begin, calculate_end);
+    debug_printf("worker %d calculated, size:%d, begin:%d, end:%d\n", mpi_rank_,
+                 vector_size, extra_begin, calculate_end);
 
     std::string debug_str;
     for (int i = 0; i < particles.size(); ++i) {
       debug_str += string_printf("%d:%s:%e\n", i,
                                  particles[i].to_string().c_str(), forces[i]);
     }
-    printf("worker %d debug result:\n%s\n", mpi_rank_, debug_str.c_str());
+    debug_printf("worker %d debug result:\n%s\n", mpi_rank_, debug_str.c_str());
 
     int send_back_begin = (!!extra_begin) ? 1 : 0;
 
     int send_back_data_size = vector_size - extra_begin - extra_end;
-    printf("MPI worker %d send back data, size:%d, begin:%d\n", mpi_rank_,
-           send_back_data_size, send_back_begin);
+    debug_printf("MPI worker %d send back data, size:%d, begin:%d\n", mpi_rank_,
+                 send_back_data_size, send_back_begin);
     MPI_Send(&(forces[send_back_begin]), send_back_data_size, MPI_DOUBLE, 0,
              MPI_Tag::DOUBLE, MPI_COMM_WORLD);
   }

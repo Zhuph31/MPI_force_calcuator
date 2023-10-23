@@ -26,8 +26,9 @@ public:
 
     int left = total_size - (part_size * thread_num_);
 
-    printf("running even dispatcher, thread num:%d, size:%d, part_size:%d\n",
-           thread_num_, total_size, part_size);
+    debug_printf(
+        "running even dispatcher, thread num:%d, size:%d, part_size:%d\n",
+        thread_num_, total_size, part_size);
 
     for (size_t i = 0; i < thread_num_; ++i) {
       int inner_part_size = part_size;
@@ -54,12 +55,12 @@ public:
 protected:
   void calculate(int index, std::vector<Particle> &particles,
                  std::vector<double> &forces, int begin, int end) {
-    printf("thread %d starts, begin:%d, end:%d\n", index, begin, end);
+    debug_printf("thread %d starts, begin:%d, end:%d\n", index, begin, end);
     calculate_closest(particles, begin, end);
     debug_particles(particles);
     calculate_force(particles, forces, begin, end);
-    printf("%s\n", string_printf_vector(forces).c_str());
-    printf("thread %d finishes\n", index);
+    debug_printf("%s\n", string_printf_vector(forces).c_str());
+    debug_printf("thread %d finishes\n", index);
   }
 
   int thread_num_ = 1;

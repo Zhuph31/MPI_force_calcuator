@@ -13,7 +13,7 @@ public:
 
   std::vector<double> run(const std::vector<Particle> &particles,
                           std::vector<double> &forces) {
-    printf("MPI dispatcher running\n");
+    debug_printf("MPI dispatcher running\n");
 
     std::vector<std::pair<int, int>> worker_particle_num;
     worker_particle_num.reserve(worker_num_);
@@ -38,12 +38,13 @@ public:
 
       worker_particle_num.emplace_back(begin, end);
 
-      printf("MPI dispatcher, dispatching for worker %d, begin:%d, end:%d, "
-             "inner split size:%d\n",
-             i, begin, end, inner_split_size);
+      debug_printf(
+          "MPI dispatcher, dispatching for worker %d, begin:%d, end:%d, "
+          "inner split size:%d\n",
+          i, begin, end, inner_split_size);
       int size = end - begin + 1;
       MPI_Send(&size, 1, MPI_INT, i, MPI_Tag::INT, MPI_COMM_WORLD);
-      printf("vec size %d dispatched to worker %d\n", size, i);
+      debug_printf("vec size %d dispatched to worker %d\n", size, i);
 
       // send extra size
       MPI_Send(&extra_begin, 1, MPI_INT, i, MPI_Tag::INT, MPI_COMM_WORLD);
@@ -55,7 +56,7 @@ public:
         MPI_Send(&(p.y), 1, MPI_INT, i, MPI_Tag::INT, MPI_COMM_WORLD);
         MPI_Send(p.type.c_str(), 2, MPI_CHAR, i, MPI_Tag::CHAR, MPI_COMM_WORLD);
       }
-      printf("vec dispatched to worker %d\n", i);
+      debug_printf("vec dispatched to worker %d\n", i);
 
       begin = end - 1;
       extra_begin = 1;
@@ -66,12 +67,12 @@ public:
           extra_end = (i == worker_num_ ? 0 : 1);
       int size = worker_particle_num[i - 1].second -
                  worker_particle_num[i - 1].first + 1 - extra_begin - extra_end;
-      printf("calculate size :%d,%d,%d,%d,%d\n",
-             worker_particle_num[i - 1].second,
-             worker_particle_num[i - 1].first, 1, extra_begin, extra_end);
+      debug_printf("calculate size :%d,%d,%d,%d,%d\n",
+                   worker_particle_num[i - 1].second,
+                   worker_particle_num[i - 1].first, 1, extra_begin, extra_end);
 
       int begin = worker_particle_num[i - 1].first + extra_begin;
-      printf(
+      debug_printf(
           "MPI dispatcher receive result from worker %d, begin:%d, size:%d\n",
           i, begin, size);
 
@@ -79,8 +80,8 @@ public:
                MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
-    printf("debug results after all:\n%s\n",
-           string_printf_vector(forces).c_str());
+    debug_printf("debug results after all:\n%s\n",
+                 string_printf_vector(forces).c_str());
 
     return forces;
   }

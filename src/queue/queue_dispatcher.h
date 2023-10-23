@@ -17,7 +17,7 @@ public:
     int pos = 0;
     int extra_begin = (begin == 0 ? 0 : 1), extra_end = 1;
 
-    printf("queue disptacher %d start running\n", id_);
+    debug_printf("queue disptacher %d start running\n", id_);
     bool should_break = false;
     while (!should_break) {
       std::vector<Particle> chunk;
@@ -52,7 +52,7 @@ public:
       extra_begin = 1;
     }
 
-    printf("queue dispatcher %d finsihed chunking\n", id_);
+    debug_printf("queue dispatcher %d finsihed chunking\n", id_);
 
     for (int i = 0; i < thread_num_; ++i) {
       workers_.emplace_back(std::thread(std::bind(
@@ -63,7 +63,7 @@ public:
       workers_[i].join();
     }
 
-    printf("queue dispatcher %d finished\n", id_);
+    debug_printf("queue dispatcher %d finished\n", id_);
   }
 
 private:
