@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
     if (rank == 0) {
       MPIDispatcher dispatcher(size - 1);
-      dispatcher.run(particles);
+      dispatcher.run(particles, forces);
     } else {
       MPIWorker worker(rank, FLAGS_thread_num);
       worker.run();

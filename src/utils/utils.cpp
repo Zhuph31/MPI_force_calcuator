@@ -13,7 +13,7 @@ std::string string_printf(const char *format, ...) {
 std::string string_printf_vector(const std::vector<double> &vec) {
   std::string str;
   for (double each : vec) {
-    str += string_printf("%lf,", each);
+    str += string_printf("%e,", each);
   }
   return str;
 }

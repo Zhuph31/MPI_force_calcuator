@@ -11,10 +11,11 @@ class MPIDispatcher {
 public:
   MPIDispatcher(int worker_num) : worker_num_(worker_num) {}
 
-  std::vector<double> run(const std::vector<Particle> &particles) {
+  std::vector<double> run(const std::vector<Particle> &particles,
+                          std::vector<double> &forces) {
     printf("MPI dispatcher running\n");
 
-    std::vector<int> worker_particle_num;
+    std::vector<std::pair<int, int>> worker_particle_num;
     worker_particle_num.reserve(worker_num_);
     int split_size = particles.size() / worker_num_;
 
@@ -28,6 +29,8 @@ public:
         end = particles.size() - 1;
         extra_end = 0;
       }
+
+      worker_particle_num.emplace_back(begin, end);
 
       printf("MPI dispatcher, dispatching for worker %d, begin:%d, end:%d\n", i,
              begin, end);
@@ -50,15 +53,26 @@ public:
       extra_begin = 1;
     }
 
-    // for (int i = 1; i <= worker_num_; i++) {
-    //   std::vector<double> forces;
-    //   forces.resize(particles.size());
-    //   MPI_Recv(forces.data(), worker_particle_num[i], MPI_INT, 0,
-    //   MPI_Tag::INT,
-    //            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    // }
+    for (int i = 1; i <= worker_num_; i++) {
+      int extra_begin = (i == 1 ? 0 : 1),
+          extra_end = (i == worker_num_ ? 0 : 1);
+      int size = worker_particle_num[i - 1].second -
+                 worker_particle_num[i - 1].first + 1 - extra_begin - extra_end;
+      printf("calculate size :%d,%d,%d,%d,%d\n",
+             worker_particle_num[i - 1].second,
+             worker_particle_num[i - 1].first, 1, extra_begin, extra_end);
 
-    std::vector<double> forces;
+      int begin = worker_particle_num[i - 1].first + extra_begin;
+      printf(
+          "MPI dispatcher receive result from worker %d, begin:%d, size:%d\n",
+          i, begin, size);
+
+      MPI_Recv(&(forces[begin]), size, MPI_DOUBLE, i, MPI_Tag::DOUBLE,
+               MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    printf("debug results after all:\n%s\n",
+           string_printf_vector(forces).c_str());
 
     return forces;
   }
