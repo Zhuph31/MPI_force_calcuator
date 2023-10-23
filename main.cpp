@@ -10,6 +10,7 @@
 #include "src/mpi/mpi_worker.h"
 #include "src/serial/serial.h"
 
+DEFINE_bool(show_result, false, "");
 DEFINE_int32(mode, 1, "mode number");
 DEFINE_int32(particle_num, 100, "number of particles to calculate");
 DEFINE_int32(thread_num, 10, "number of threads in mode 1");
@@ -66,9 +67,14 @@ int main(int argc, char *argv[]) {
     debug_printf(" Time taken by function: %ld microseconds\n",
                  duration.count());
 
-    for (size_t i = 0; i < forces.size() && i < 10; ++i) {
-      debug_printf("index:%lu, particle:%s, force:%e\n", i,
-                   particles[i].to_string().c_str(), forces[i]);
+    for (size_t i = 0; i < forces.size(); ++i) {
+      if (FLAGS_show_result) {
+        printf("index:%lu, particle:%s, force:%e\n", i + 1,
+               particles[i].to_string().c_str(), forces[i]);
+      } else {
+        debug_printf("index:%lu, particle:%s, force:%e\n", i + 1,
+                     particles[i].to_string().c_str(), forces[i]);
+      }
     }
   }
 
