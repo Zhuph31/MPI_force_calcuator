@@ -39,12 +39,15 @@ void calculate_force(const std::vector<Particle> &particles,
     end = particles.size() - 1;
   }
 
+  int count = 0;
   for (size_t i = begin; i <= size_t(end); ++i) {
+    ++count;
     const Particle &p = particles[i];
     double dist = std::sqrt(std::pow((p.x - p.closest->x) * unit_size, 2) +
                             std::pow((p.y - p.closest->y) * unit_size, 2));
 
     double force = coulombK * std::pow(charge, 2) / std::pow(dist, 2);
-    results[i] = force;
+    // results[i] = force;
   }
+  // printf("claculate force %d\n", count);
 }

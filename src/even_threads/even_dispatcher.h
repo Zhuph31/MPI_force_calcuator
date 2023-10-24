@@ -10,7 +10,9 @@
 class EvenDispatcher {
 
 public:
-  EvenDispatcher(int thread_num) : thread_num_(thread_num) {}
+  EvenDispatcher(int thread_num) : thread_num_(thread_num) {
+    tc_.resize(thread_num);
+  }
 
   virtual void run(std::vector<Particle> &particles,
                    std::vector<double> &forces, int begin = -1, int end = -1) {
@@ -50,19 +52,43 @@ public:
     for (size_t i = 0; i < thread_num_; ++i) {
       workers_[i].join();
     }
+
+    long sum = 0;
+    for (long tc : tc_) {
+      sum += tc;
+    }
+
+    printf("even dispatcher, calculate cost:%lf\n",
+           double(sum) / double(thread_num_));
   }
 
 protected:
   void calculate(int index, std::vector<Particle> &particles,
                  std::vector<double> &forces, int begin, int end) {
+    using namespace std::chrono;
+    auto bb = std::chrono::high_resolution_clock::now();
     debug_printf("thread %d starts, begin:%d, end:%d\n", index, begin, end);
     calculate_closest(particles, begin, end);
+    auto bc = std::chrono::high_resolution_clock::now();
+    printf(
+        "thread %d closest cost:%ld\n", index,
+        std::chrono::duration_cast<std::chrono::milliseconds>(bc - bb).count());
     debug_particles(particles);
     calculate_force(particles, forces, begin, end);
+    auto bf = std::chrono::high_resolution_clock::now();
+    printf(
+        "thread %d force cost:%ld\n", index,
+        std::chrono::duration_cast<std::chrono::milliseconds>(bf - bc).count());
     debug_printf("%s\n", string_printf_vector(forces).c_str());
     debug_printf("thread %d finishes\n", index);
+    tc_[index] = std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now() - bb)
+                     .count();
+    printf("thread %d calcualte tc:%ld, size:%d\n", index, tc_[index],
+           (end - begin + 1));
   }
 
   int thread_num_ = 1;
   std::vector<std::thread> workers_;
+  std::vector<long> tc_;
 };
