@@ -29,17 +29,13 @@ public:
     MPI_Recv(&extra_end, 1, MPI_INT, 0, MPI_Tag::INT, MPI_COMM_WORLD,
              MPI_STATUS_IGNORE);
 
+    std::vector<int> particle_ints;
+    particle_ints.reserve(vector_size * 2);
+    MPI_Recv(particle_ints.data(), vector_size * 2, MPI_INT, 0, MPI_Tag::INT,
+             MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     for (int i = 0; i < vector_size; ++i) {
-      MPI_Recv(&(particles[i].x), 1, MPI_INT, 0, MPI_Tag::INT, MPI_COMM_WORLD,
-               MPI_STATUS_IGNORE);
-      MPI_Recv(&(particles[i].y), 1, MPI_INT, 0, MPI_Tag::INT, MPI_COMM_WORLD,
-               MPI_STATUS_IGNORE);
-
-      char message_buffer[2];
-      MPI_Recv(&message_buffer, 2, MPI_CHAR, 0, MPI_Tag::CHAR, MPI_COMM_WORLD,
-               MPI_STATUS_IGNORE);
-
-      particles[i].type = message_buffer;
+      particles[i].x = particle_ints[i * 2];
+      particles[i].y = particle_ints[i * 2 + 1];
     }
     debug_printf(
         "worker %d vec received, size:%lu, extra_begin:%d, extra_end:%d\n",

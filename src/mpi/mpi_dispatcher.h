@@ -52,12 +52,15 @@ public:
       MPI_Send(&extra_begin, 1, MPI_INT, i, MPI_Tag::INT, MPI_COMM_WORLD);
       MPI_Send(&extra_end, 1, MPI_INT, i, MPI_Tag::INT, MPI_COMM_WORLD);
 
+      std::vector<int> partial_particles;
+      partial_particles.reserve(size * 2);
       for (int j = begin; j <= end; ++j) {
         const Particle &p = particles[j];
-        MPI_Send(&(p.x), 1, MPI_INT, i, MPI_Tag::INT, MPI_COMM_WORLD);
-        MPI_Send(&(p.y), 1, MPI_INT, i, MPI_Tag::INT, MPI_COMM_WORLD);
-        MPI_Send(p.type.c_str(), 2, MPI_CHAR, i, MPI_Tag::CHAR, MPI_COMM_WORLD);
+        partial_particles.emplace_back(p.x);
+        partial_particles.emplace_back(p.y);
       }
+      MPI_Send(partial_particles.data(), size * 2, MPI_INT, i, MPI_Tag::INT,
+               MPI_COMM_WORLD);
       debug_printf("vec dispatched to worker %d\n", i);
 
       begin = end - 1;
