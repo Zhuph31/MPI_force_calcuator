@@ -15,6 +15,7 @@ struct Particle {
   Particle *closest;
 
   std::string to_string() const {
+    return "";
     std::string closest_str =
         closest ? string_printf("%d|%d|%s", closest->x, closest->y,
                                 closest->type.c_str())
