@@ -7,7 +7,7 @@
 #include "../particle.h"
 
 class QueueDispatcher : public EvenDispatcher {
-public:
+ public:
   QueueDispatcher(int id, int thread_num, int chunk_size)
       : EvenDispatcher(thread_num), id_(id), chunk_size_(chunk_size) {}
 
@@ -40,6 +40,8 @@ public:
         should_break = true;
       }
 
+      printf("pushed chunk %d|%zu|%d|%d, pos:%d\n", begin_index, chunk.size(),
+             extra_begin, extra_end, pos);
       q_.push(
           ParticleChunk(begin_index, extra_begin, extra_end, std::move(chunk)));
 
@@ -48,7 +50,7 @@ public:
       }
 
       // extra begin
-      --pos;
+      pos -= extra_end + 1;
       extra_begin = 1;
     }
 
@@ -66,7 +68,7 @@ public:
     debug_printf("queue dispatcher %d finished\n", id_);
   }
 
-private:
+ private:
   struct ParticleChunk {
     int begin_index;
     int extra_begin;
