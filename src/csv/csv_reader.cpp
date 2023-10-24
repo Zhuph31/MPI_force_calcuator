@@ -16,6 +16,8 @@ std::vector<Particle> read_csv(size_t num) {
     return particles;
   }
 
+  particles.reserve(num);
+
   std::string line;
   while (std::getline(file, line) && particles.size() < num) {
     std::istringstream ss(line);

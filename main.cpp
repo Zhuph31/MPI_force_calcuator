@@ -19,15 +19,30 @@ DEFINE_int32(thread_num, 10, "number of threads in mode 1");
 int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   // debug_printf("particle num:%d\n", FLAGS_particle_num);
+  using namespace std::chrono;
 
+  int rank = -1, size = -1;
 
-  auto particles = read_csv(FLAGS_particle_num);
+  if (FLAGS_mode == 3) {
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+  }
+
+  std::vector<Particle> particles;
+  if (FLAGS_mode == 3 && rank != 0) {
+  } else {
+    auto csv_bb = high_resolution_clock::now();
+    particles = read_csv(FLAGS_particle_num);
+    printf("read csv cost:%ld\n",
+           duration_cast<milliseconds>(high_resolution_clock::now() - csv_bb)
+               .count());
+  }
 
   std::vector<double> forces;
   forces.resize(particles.size());
 
   auto start = std::chrono::high_resolution_clock::now();
-  int rank = -1, size = -1;
 
   if (FLAGS_perf) {
     for (int thread = 1; thread <= 32; ++thread) {
@@ -50,9 +65,6 @@ int main(int argc, char *argv[]) {
     break;
   }
   case 3: {
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
     // debug_printf("size:%d, rank:%d\n", size, rank);
     debug_printf("process %d rank %d\n", getpid(), rank);
 
