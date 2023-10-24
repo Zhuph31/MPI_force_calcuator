@@ -80,8 +80,8 @@ public:
                MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
-    debug_printf("debug results after all:\n%s\n",
-                 string_printf_vector(forces).c_str());
+    // debug_printf("debug results after all:\n%s\n",
+    //              string_printf_vector(forces).c_str());
 
     return forces;
   }

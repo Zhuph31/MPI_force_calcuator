@@ -54,16 +54,7 @@ public:
 
     debug_printf("worker %d calculated, size:%d, begin:%d, end:%d\n", mpi_rank_,
                  vector_size, extra_begin, calculate_end);
-
-    std::string debug_str;
-    for (int i = 0; i < particles.size(); ++i) {
-      debug_str += string_printf("%d:%s:%e\n", i,
-                                 particles[i].to_string().c_str(), forces[i]);
-    }
-    debug_printf("worker %d debug result:\n%s\n", mpi_rank_, debug_str.c_str());
-
     int send_back_begin = (!!extra_begin) ? 1 : 0;
-
     int send_back_data_size = vector_size - extra_begin - extra_end;
     debug_printf("MPI worker %d send back data, size:%d, begin:%d\n", mpi_rank_,
                  send_back_data_size, send_back_begin);

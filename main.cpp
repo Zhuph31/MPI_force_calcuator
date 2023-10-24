@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   // debug_printf("particle num:%d\n", FLAGS_particle_num);
 
+
   auto particles = read_csv(FLAGS_particle_num);
 
   std::vector<double> forces;
@@ -29,11 +30,11 @@ int main(int argc, char *argv[]) {
   int rank = -1, size = -1;
 
   if (FLAGS_perf) {
-    for (int thread = 1; thread <= 24; ++thread) {
-      printf("%d threads:\n", thread);
+    for (int thread = 1; thread <= 32; ++thread) {
+      // printf("%d threads:\n", thread);
       EvenDispatcher dispatcher(thread);
       dispatcher.run(particles, forces);
-      printf("\n");
+      // printf("\n");
     }
     return 0;
   }
@@ -78,15 +79,15 @@ int main(int argc, char *argv[]) {
     debug_printf(" Time taken by function: %ld microseconds\n",
                  duration.count());
 
-    for (size_t i = 0; i < forces.size(); ++i) {
-      if (FLAGS_show_result) {
-        printf("index:%lu, particle:%s, force:%e\n", i + 1,
-               particles[i].to_string().c_str(), forces[i]);
-      } else {
-        debug_printf("index:%lu, particle:%s, force:%e\n", i + 1,
-                     particles[i].to_string().c_str(), forces[i]);
-      }
-    }
+    // for (size_t i = 0; i < forces.size(); ++i) {
+    //   if (FLAGS_show_result) {
+    //     printf("index:%lu, particle:%s, force:%e\n", i + 1,
+    //            particles[i].to_string().c_str(), forces[i]);
+    //   } else {
+    //     debug_printf("index:%lu, particle:%s, force:%e\n", i + 1,
+    //                  particles[i].to_string().c_str(), forces[i]);
+    //   }
+    // }
   }
 
   return 0;

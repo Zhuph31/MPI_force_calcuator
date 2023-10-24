@@ -58,14 +58,14 @@ public:
       sum += tc;
     }
 
-    printf("even dispatcher, calculate cost:%lf\n",
-           double(sum) / double(thread_num_));
+    printf("%d %lf\n",
+            thread_num_, double(sum) / double(thread_num_));
   }
 
 protected:
   void calculate(int index, std::vector<Particle> &particles,
                  std::vector<double> &forces, int begin, int end) {
- ;   using namespace std::chrono;
+    using namespace std::chrono;
     auto bb = std::chrono::high_resolution_clock::now();
     calculate_closest(particles, begin, end);
     // auto bc = std::chrono::high_resolution_clock::now();
