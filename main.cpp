@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     throw std::runtime_error("this mode is not implemented");
   }
 
-  if (FLAGS_mode != 2 || rank == 0) {
+  if (FLAGS_mode != 3 || rank == 0) {
     auto end = std::chrono::high_resolution_clock::now();
     auto duration =
         std::chrono::duration_cast<std::chrono::microseconds>(end - start);
