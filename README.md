@@ -29,3 +29,7 @@ Running the program in mode 3 requires you to execute the program through comman
 ```mpirun -np ${number_of_processes} ./force_calculation```
 After running, the time cost of each part of the program will be printed through standard output.
 
+# Benchmark
+running ```bash compare_modes.sh``` will run the program in all 3 modes and output the time cost.
+running ```bash test_mode3.sh``` will run the program in mode 3 with different number of particles.
+
