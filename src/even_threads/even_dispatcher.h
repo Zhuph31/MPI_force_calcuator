@@ -58,8 +58,8 @@ public:
       sum += tc;
     }
 
-    printf("%d %lf\n",
-            thread_num_, double(sum) / double(thread_num_));
+    printf("even split calculation cost:%lf\n",
+           double(sum) / double(thread_num_));
   }
 
 protected:
