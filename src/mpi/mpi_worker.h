@@ -45,12 +45,9 @@ public:
     forces.resize(vector_size);
 
     using namespace std::chrono;
-    auto bb = high_resolution_clock::now();
     QueueDispatcher dispatcher(mpi_rank_, thread_num_, FLAGS_chunk_size);
     int calculate_end = vector_size - 1 - extra_end;
     dispatcher.run(particles, forces, extra_begin, calculate_end);
-    auto ee = high_resolution_clock::now();
-    long cal_cost = duration_cast<milliseconds>(ee - bb).count();
 
     debug_printf("worker %d calculated, size:%d, begin:%d, end:%d\n", mpi_rank_,
                  vector_size, extra_begin, calculate_end);
@@ -61,7 +58,10 @@ public:
     MPI_Send(&(forces[send_back_begin]), send_back_data_size, MPI_DOUBLE, 0,
              MPI_Tag::DOUBLE, MPI_COMM_WORLD);
 
-    MPI_Send(&cal_cost, 1, MPI_LONG, 0, MPI_Tag::LONG, MPI_COMM_WORLD);
+    // printf("debug results in MPI worker:\n%s\n",
+    //              string_printf_vector(forces).c_str());
+
+    MPI_Send(&(dispatcher.tc_), 1, MPI_LONG, 0, MPI_Tag::LONG, MPI_COMM_WORLD);
   }
 
 private:

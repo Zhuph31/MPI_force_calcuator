@@ -1,6 +1,6 @@
-#include <gflags/gflags.h>
-
 #include "utils.h"
+
+#include <gflags/gflags.h>
 #include <stdarg.h>
 
 DEFINE_bool(debug_log, false, "");
@@ -16,8 +16,9 @@ std::string string_printf(const char *format, ...) {
 
 std::string string_printf_vector(const std::vector<double> &vec) {
   std::string str;
+  int pos = 0;
   for (double each : vec) {
-    str += string_printf("%e,", each);
+    str += string_printf("%d:%e\n", pos++, each);
   }
   return str;
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -7,15 +8,18 @@
 #include "../particle.h"
 
 class QueueDispatcher : public EvenDispatcher {
- public:
+public:
   QueueDispatcher(int id, int thread_num, int chunk_size)
       : EvenDispatcher(thread_num), id_(id), chunk_size_(chunk_size) {}
+
+  std::atomic_long tc_;
 
   void run(std::vector<Particle> &particles, std::vector<double> &forces,
            int begin = -1, int end = -1) override {
     int particle_size = particles.size();
     int pos = 0;
     int extra_begin = (begin == 0 ? 0 : 1), extra_end = 1;
+    tc_ = 0;
 
     debug_printf("queue disptacher %d start running\n", id_);
     bool should_break = false;
@@ -40,8 +44,9 @@ class QueueDispatcher : public EvenDispatcher {
         should_break = true;
       }
 
-      printf("pushed chunk %d|%zu|%d|%d, pos:%d\n", begin_index, chunk.size(),
-             extra_begin, extra_end, pos);
+      // printf("pushed chunk %d|%zu|%d|%d, pos:%d\n", begin_index,
+      // chunk.size(),
+      //        extra_begin, extra_end, pos);
       q_.push(
           ParticleChunk(begin_index, extra_begin, extra_end, std::move(chunk)));
 
@@ -56,6 +61,8 @@ class QueueDispatcher : public EvenDispatcher {
 
     debug_printf("queue dispatcher %d finsihed chunking\n", id_);
 
+    auto bb = std::chrono::high_resolution_clock::now();
+
     for (int i = 0; i < thread_num_; ++i) {
       workers_.emplace_back(std::thread(std::bind(
           &QueueDispatcher::fetch_and_calculate, this, i, std::ref(forces))));
@@ -66,9 +73,13 @@ class QueueDispatcher : public EvenDispatcher {
     }
 
     debug_printf("queue dispatcher %d finished\n", id_);
+
+    tc_ = std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::high_resolution_clock::now() - bb)
+              .count();
   }
 
- private:
+private:
   struct ParticleChunk {
     int begin_index;
     int extra_begin;
@@ -95,23 +106,32 @@ class QueueDispatcher : public EvenDispatcher {
   }
 
   void fetch_and_calculate(int index, std::vector<double> &forces) {
+    auto bb = std::chrono::high_resolution_clock::now();
     auto ret = fetch();
-    if (!(ret.first)) {
-      return;
-    }
-    ParticleChunk &pc = ret.second;
+    while (ret.first) {
+      ParticleChunk &pc = ret.second;
 
-    std::vector<double> partial_forces;
-    partial_forces.resize(pc.chunk.size());
-    calculate(index, pc.chunk, partial_forces, pc.extra_begin,
-              pc.chunk.size() - 1 - pc.extra_end);
+      std::vector<double> partial_forces;
+      partial_forces.resize(pc.chunk.size());
+      calculate(index, pc.chunk, partial_forces, pc.extra_begin,
+                pc.chunk.size() - 1 - pc.extra_end);
 
-    // copy back to forces
-    for (int i = pc.extra_begin, j = pc.begin_index + pc.extra_begin;
-         i < partial_forces.size() - pc.extra_end; ++i, ++j) {
-      forces[j] = partial_forces[i];
+      // copy back to forces
+      // printf("write back result, from %d, size %zu\n",
+      //        pc.begin_index + pc.extra_begin,
+      //        partial_forces.size() - pc.extra_end - pc.extra_begin);
+      for (int i = pc.extra_begin, j = pc.begin_index + pc.extra_begin;
+           i < partial_forces.size() - pc.extra_end; ++i, ++j) {
+        forces[j] = partial_forces[i];
+      }
+
+      ret = fetch();
     }
+    auto ee = std::chrono::high_resolution_clock::now();
+    tc_ +=
+        std::chrono::duration_cast<std::chrono::milliseconds>(ee - bb).count();
   }
+
   int id_;
   int chunk_size_;
   std::mutex m_;

@@ -66,7 +66,7 @@ public:
       begin = end - 1;
       extra_begin = 1;
     }
-    printf("partition data cost:%ld\n",
+    printf("partition cost:%ld\n",
            duration_cast<milliseconds>(high_resolution_clock::now() -
                                        partition_data_bb)
                .count());
@@ -96,9 +96,9 @@ public:
       total_cost += cal_cost;
     }
 
-    printf("MPI calcuation cost :%ld\n", total_cost / worker_num_);
+    printf("MPI calculation cost :%ld\n", total_cost / worker_num_);
 
-    // debug_printf("debug results after all:\n%s\n",
+    // printf("debug results after all:\n%s\n",
     //              string_printf_vector(forces).c_str());
 
     return forces;

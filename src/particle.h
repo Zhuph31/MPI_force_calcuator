@@ -1,7 +1,11 @@
 #pragma once
+#include <gflags/gflags.h>
+#include <gflags/gflags_declare.h>
 #include <vector>
 
 #include "utils/utils.h"
+
+DECLARE_bool(show_result);
 
 struct Particle {
   Particle() { closest = nullptr; }
@@ -15,12 +19,14 @@ struct Particle {
   Particle *closest;
 
   std::string to_string() const {
-    return "";
+    if (!FLAGS_show_result) {
+      return "";
+    }
     std::string closest_str =
         closest ? string_printf("%d|%d|%s", closest->x, closest->y,
                                 closest->type.c_str())
                 : "";
-    return string_printf("%d|%d|%s-%s", x, y, type.c_str(),
+    return string_printf("%d|%d|%s,closest:%s", x, y, type.c_str(),
                          closest_str.c_str());
   }
 };

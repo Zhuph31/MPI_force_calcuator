@@ -55,10 +55,16 @@ int main(int argc, char *argv[]) {
   }
 
   switch (FLAGS_mode) {
-  case 1:
+  case 1: {
+
+    auto bb = high_resolution_clock::now();
     calculate_closest(particles);
     calculate_force(particles, forces);
+    printf(
+        "serial calculation cost:%ld\n",
+        duration_cast<milliseconds>(high_resolution_clock::now() - bb).count());
     break;
+  }
   case 2: {
     EvenDispatcher dispatcher(FLAGS_thread_num);
     dispatcher.run(particles, forces);
@@ -91,15 +97,13 @@ int main(int argc, char *argv[]) {
     debug_printf(" Time taken by function: %ld microseconds\n",
                  duration.count());
 
-    // for (size_t i = 0; i < forces.size(); ++i) {
-    //   if (FLAGS_show_result) {
-    //     printf("index:%lu, particle:%s, force:%e\n", i + 1,
-    //            particles[i].to_string().c_str(), forces[i]);
-    //   } else {
-    //     debug_printf("index:%lu, particle:%s, force:%e\n", i + 1,
-    //                  particles[i].to_string().c_str(), forces[i]);
-    //   }
-    // }
+    for (size_t i = 0; i < forces.size(); ++i) {
+      if (FLAGS_show_result) {
+        printf("%lu,%e\n", i + 1, forces[i]);
+      } else {
+        debug_printf("%lu,%e\n", i + 1, forces[i]);
+      }
+    }
   }
 
   return 0;
