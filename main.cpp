@@ -11,7 +11,6 @@
 #include "src/serial/serial.h"
 
 DEFINE_bool(show_result, false, "");
-DEFINE_bool(perf, false, "");
 DEFINE_int32(mode, 1, "mode number");
 DEFINE_int32(particle_num, 100, "number of particles to calculate");
 DEFINE_int32(thread_num, 10, "number of threads in mode 1");
@@ -43,16 +42,6 @@ int main(int argc, char *argv[]) {
   forces.resize(particles.size());
 
   auto start = std::chrono::high_resolution_clock::now();
-
-  if (FLAGS_perf) {
-    for (int thread = 1; thread <= 32; ++thread) {
-      // printf("%d threads:\n", thread);
-      EvenDispatcher dispatcher(thread);
-      dispatcher.run(particles, forces);
-      // printf("\n");
-    }
-    return 0;
-  }
 
   switch (FLAGS_mode) {
   case 1: {
