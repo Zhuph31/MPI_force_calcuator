@@ -1,5 +1,5 @@
 # parallel_assignment_1
-coee for 1747 parallel programming assignment 1
+code for 1747 parallel programming assignment 1
 
 # BUILD
 This project is build with CMake.
