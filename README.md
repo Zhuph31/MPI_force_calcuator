@@ -30,9 +30,9 @@ Running the program in mode 3 requires you to execute the program through comman
 After running, the time cost of each part of the program will be printed through standard output.
 
 # Test Cases
-runnig ```./force_calculator --mode=1 --particle_num=100 --show_result``` will calculate and print the first 100 particles' result using mode 1.
-runnig ```./force_calculator --mode=2 --particle_num=100000000 --thread_num=${thread_num}``` can allow you to test the performance of mode 2 with different number of threads.
-runnig ```mpirun -np ${process_num} ./force_calculator --mode=3 --particle_num=${particle_num} --thread_num=${thread_num}``` can allow you to test the performance of mode 3 with different number of processes, threads, and particles. Note that the main process will not participate in calculation so the number of leader processes is ${process_num}-1.
-running ```bash compare_modes.sh``` will run the program in all 3 modes and output the time cost.
-running ```bash test_mode3.sh``` will run the program in mode 3 with different number of particles.
+- runnig ```./force_calculator --mode=1 --particle_num=100 --show_result``` will calculate and print the first 100 particles' result using mode 1.
+- runnig ```./force_calculator --mode=2 --particle_num=100000000 --thread_num=${thread_num}``` can allow you to test the performance of mode 2 with different number of threads.
+- runnig ```mpirun -np ${process_num} ./force_calculator --mode=3 --particle_num=${particle_num} --thread_num=${thread_num}``` can allow you to test the performance of mode 3 with different number of processes, threads, and particles. Note that the main process will not participate in calculation so the number of leader processes is ${process_num}-1.
+- running ```bash compare_modes.sh``` will run the program in all 3 modes with the same number of particles, and the same number of threads for mode 2 and 3, and output the time cost.
+- running ```bash test_mode3.sh``` will run the program in mode 3 with different number of particles.
 
