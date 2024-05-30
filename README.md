@@ -1,5 +1,5 @@
-# parallel_assignment_1
-code for 1747 parallel programming assignment 1
+# MPI force calculator
+A parallel program used to calculate force between different nodes using MPI.
 
 # BUILD
 This project is build with CMake.
